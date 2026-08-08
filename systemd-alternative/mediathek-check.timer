@@ -1,0 +1,11 @@
+[Unit]
+Description=Regelmäßiger Abgleich auf neue Mediathek-Folgen
+
+[Timer]
+# Alle 6 Stunden prüfen, ob es neue Folgen gibt
+OnCalendar=*-*-* 0/6:00:00
+RandomizedDelaySec=300
+Persistent=true
+
+[Install]
+WantedBy=timers.target

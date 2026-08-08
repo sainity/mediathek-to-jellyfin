@@ -1,0 +1,76 @@
+# Before deploying, replace all placeholders in this file:
+#   <MEDIA_SHARE>     -> your NAS share for media, e.g. Multimedia
+#   <CONTAINER_SHARE>  -> your NAS share for container config/state, e.g. Container
+#   <UID>:<GID>        -> your NAS user's UID:GID (find via: id <your-nas-username>)
+#
+# Vor dem Deployment alle Platzhalter in dieser Datei ersetzen:
+#   <MEDIA_SHARE>     -> deine NAS-Freigabe fuer Medien, z.B. Multimedia
+#   <CONTAINER_SHARE>  -> deine NAS-Freigabe fuer Container-Konfiguration/-Status, z.B. Container
+#   <UID>:<GID>        -> UID:GID deines NAS-Benutzers (ermitteln via: id <dein-nas-benutzername>)
+#
+# Ports (adjust if already taken on your NAS / bei Bedarf anpassen, falls schon belegt):
+#   8199 -> Jellyfin Web-UI
+#   8098 -> mediathek-web management UI
+#   8920 -> Jellyfin HTTPS (optional)
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    # UID/GID an den QNAP-Benutzer anpassen, dem die Freigaben gehören.
+    # Per SSH herausfinden: id <benutzername>  (z.B. id Christian_A)
+    # Die hier eingetragene UID:GID muss mit dem Besitzer von config/ und
+    # cache/ auf der NAS übereinstimmen (siehe chown-Befehl in der Anleitung),
+    # sonst schlägt der Start mit "Access to the path '/config/log' is denied" fehl.
+    user: "<UID>:<GID>"
+    network_mode: bridge
+    ports:
+      - "8199:8096"        # Web-UI / HTTP (NAS-Port links, bei Bedarf anpassen)
+      - "8920:8920"        # HTTPS (optional, eigenes Zertifikat nötig)
+      # 7359/udp (Client-Autodiscovery) entfernt: kollidiert mit einem QNAP-Dienst.
+      # Ohne diesen Port funktioniert Jellyfin normal, nur die automatische
+      # Server-Erkennung in manchen Apps entfällt — Adresse dann manuell eintragen.
+    volumes:
+      - /share/<CONTAINER_SHARE>/jellyfin/config:/config
+      - /share/<CONTAINER_SHARE>/jellyfin/cache:/cache
+      # Gesamte Multimedia-Freigabe einbinden (enthält Filme/, Serien/, Mediathek/)
+      - /share/<MEDIA_SHARE>:/media:ro
+    restart: unless-stopped
+    # TS-251D-4G hat eine Intel UHD 600 (Celeron J4005) -> VAAPI möglich
+    # Vorübergehend deaktiviert zum Testen (Container stürzte mit Exit 139 ab):
+    # devices:
+    #   - /dev/dri:/dev/dri
+    # Falls Jellyfin trotz "user:"-Zeile keinen Zugriff auf /dev/dri bekommt
+    # (Berechtigungsfehler im Log), folgende Zeile einkommentieren:
+    # group_add:
+    #   - "44"   # video-Gruppe, GID ggf. per SSH mit "getent group video" prüfen
+
+  mediathek-dl:
+    image: mediathek-dl:latest
+    container_name: mediathek-dl
+    user: "<UID>:<GID>"
+    restart: unless-stopped
+    environment:
+      - MEDIATHEK_DIR=/media/Mediathek
+    volumes:
+      # Schreibzugriff nötig (im Gegensatz zu Jellyfins :ro-Mount)
+      - /share/<MEDIA_SHARE>:/media
+      # urls.txt & Archiv-Datei bleiben hier dauerhaft erhalten
+      - /share/<CONTAINER_SHARE>/mediathek-dl/config:/home/mediathek/.config/mediathek-dl
+
+  mediathek-web:
+    image: mediathek-web:latest
+    container_name: mediathek-web
+    user: "<UID>:<GID>"
+    restart: unless-stopped
+    ports:
+      - "8098:5000"
+    environment:
+      - URLS_FILE=/config/urls.txt
+      - FILME_URLS_FILE=/config/filme.txt
+      - FILME_DIR=/media/Filme
+    volumes:
+      # Derselbe Config-Ordner wie bei mediathek-dl, damit beide dieselbe urls.txt sehen
+      - /share/<CONTAINER_SHARE>/mediathek-dl/config:/config
+      # Schreibzugriff nötig: Filme landen direkt hier
+      - /share/<MEDIA_SHARE>:/media

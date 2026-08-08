@@ -1,0 +1,11 @@
+[Unit]
+Description=Täglicher Mediathek-Download (yt-dlp)
+
+[Timer]
+# Täglich um 4:00 Uhr nachts, mit etwas Zufallsverzögerung
+OnCalendar=*-*-* 04:00:00
+RandomizedDelaySec=900
+Persistent=true
+
+[Install]
+WantedBy=timers.target

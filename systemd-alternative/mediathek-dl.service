@@ -1,0 +1,10 @@
+[Unit]
+Description=Automatischer Mediathek-Download via yt-dlp
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/mediathek-batch.sh
+Nice=10
+IOSchedulingClass=idle

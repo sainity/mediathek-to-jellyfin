@@ -1,0 +1,8 @@
+[Unit]
+Description=Prüft Mediatheken auf neue Folgen (ohne Download)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/mediathek-check.sh --notify

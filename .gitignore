@@ -1,0 +1,19 @@
+# Personal subscription lists / download state -- never commit real URLs or archives
+urls.txt
+filme.txt
+.archive.txt
+config/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp

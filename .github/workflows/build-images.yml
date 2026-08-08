@@ -1,0 +1,39 @@
+name: Build container images
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'mediathek-dl/**'
+      - 'mediathek-web/**'
+      - '.github/workflows/build-images.yml'
+  pull_request:
+    paths:
+      - 'mediathek-dl/**'
+      - 'mediathek-web/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [mediathek-dl, mediathek-web]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build ${{ matrix.image }} image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./${{ matrix.image }}
+          push: false
+          tags: ${{ matrix.image }}:ci
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}

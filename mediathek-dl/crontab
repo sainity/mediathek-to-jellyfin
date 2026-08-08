@@ -1,0 +1,8 @@
+# Supercronic-Crontab (Standard-Cron-Syntax, ohne User-Feld)
+# Umgebungsvariablen (z.B. MEDIATHEK_DIR) kommen automatisch aus dem Container.
+
+# Täglich 4 Uhr: eigentlicher Download aller URLs aus urls.txt
+0 4 * * * /usr/local/bin/mediathek-batch.sh
+
+# Alle 6 Stunden: nur prüfen, ob es neue Folgen gibt (kein Download)
+0 */6 * * * /usr/local/bin/mediathek-check.sh
