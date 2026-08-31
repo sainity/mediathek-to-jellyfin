@@ -1,7 +1,7 @@
 # Mediathek-to-Jellyfin — Automated German Public Broadcasting Downloader & Home Media Server
 
-[![Build container images](https://github.com/sainity/<repo-name>/actions/workflows/build-images.yml/badge.svg)](https://github.com/sainity/<repo-name>/actions/workflows/build-images.yml)
-[![Lint](https://github.com/sainity/<repo-name>/actions/workflows/lint.yml/badge.svg)](https://github.com/sainity/<repo-name>/actions/workflows/lint.yml)
+[![Build container images](https://github.com/sainity/mediathek-to-jellyfin/actions/workflows/build-images.yml/badge.svg)](https://github.com/sainity/<repo-name>/actions/workflows/build-images.yml)
+[![Lint](https://github.com/sainity/mediathek-to-jellyfin/actions/workflows/lint.yml/badge.svg)](https://github.com/sainity/<repo-name>/actions/workflows/lint.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 *(After pushing to GitHub, replace `sainity/<repo-name>` in the two badge URLs above with your actual GitHub path so they render correctly.)*
