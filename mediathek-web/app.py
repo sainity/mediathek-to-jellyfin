@@ -218,8 +218,8 @@ def read_list_file(path):
     with open(path, "r", encoding="utf-8") as f:
         raw = f.readlines()
 
-    comments = [l for l in raw if l.strip().startswith("#") or not l.strip()]
-    entries = [l.strip() for l in raw if l.strip() and not l.strip().startswith("#")]
+    comments = [line for line in raw if line.strip().startswith("#") or not line.strip()]
+    entries = [line.strip() for line in raw if line.strip() and not line.strip().startswith("#")]
     return entries, comments
 
 
